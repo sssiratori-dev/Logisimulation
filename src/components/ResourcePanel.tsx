@@ -16,7 +16,9 @@ const TERRAIN_LABEL: Record<string, string> = {
 };
 
 const QUICK_TRANSPORT = {
+  fromLabel: '拠点A',
   fromId: 'sapporo',
+  toLabel: '拠点B',
   toId: 'sendai',
   amount: 120,
 };
@@ -33,7 +35,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
   const quickArrives = QUICK_TRANSPORT.amount - quickLost;
   const resourceTurnRemainder = state.tick % RESOURCE_TURN_INTERVAL;
   const ticksUntilConsumption =
-    resourceTurnRemainder === 0 ? RESOURCE_TURN_INTERVAL : RESOURCE_TURN_INTERVAL - resourceTurnRemainder;
+    (RESOURCE_TURN_INTERVAL - resourceTurnRemainder) || RESOURCE_TURN_INTERVAL;
   const activeQuickTransports = state.wagonOrders.filter(
     (wagon) =>
       wagon.status === 'in_transit' &&
@@ -57,7 +59,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
           🎯 資源輸送プロトタイプ
         </div>
         <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: 1.5, marginBottom: '8px' }}>
-          拠点A={sourceCity?.name ?? QUICK_TRANSPORT.fromId} から 拠点B=
+          {QUICK_TRANSPORT.fromLabel}={sourceCity?.name ?? QUICK_TRANSPORT.fromId} から {QUICK_TRANSPORT.toLabel}=
           {destinationCity?.name ?? QUICK_TRANSPORT.toId} へ 🌾 食料 {QUICK_TRANSPORT.amount} を一括輸送します。
           クリック後は出発地の在庫が即時に減り、到着時にロス込みで目的地へ反映されます。
         </div>
@@ -93,7 +95,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
               fontWeight: 'bold',
             }}
           >
-            🌾 拠点A→Bへ食料を輸送
+            🌾 {QUICK_TRANSPORT.fromLabel}→{QUICK_TRANSPORT.toLabel}へ食料を輸送
           </button>
           <span style={{ color: '#64748b', fontSize: '11px' }}>
             次の食料消費まで {ticksUntilConsumption} tick
