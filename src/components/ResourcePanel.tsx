@@ -15,35 +15,34 @@ const TERRAIN_LABEL: Record<string, string> = {
   highway: '🛣 街道 (×0.9)',
 };
 
-const QUICK_TRANSPORT = {
+const QUICK_TRANSPORT_DEMO = {
   fromLabel: '拠点A',
   fromId: 'sapporo',
   toLabel: '拠点B',
   toId: 'sendai',
   amount: 120,
-};
+} as const;
 
 export function ResourcePanel({ state, onQuickTransport }: Props) {
   const corruptionPct = Math.min(100, (state.corruption / CORRUPTION_THRESHOLD) * 100);
   const corruptionColor =
     corruptionPct >= 100 ? '#f87171' : corruptionPct >= 70 ? '#fbbf24' : '#34d399';
-  const sourceCity = state.cities.find((city) => city.id === QUICK_TRANSPORT.fromId);
-  const destinationCity = state.cities.find((city) => city.id === QUICK_TRANSPORT.toId);
-  const quickRoad = getRoadBetween(QUICK_TRANSPORT.fromId, QUICK_TRANSPORT.toId, state.roads);
+  const sourceCity = state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.fromId);
+  const destinationCity = state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.toId);
+  const quickRoad = getRoadBetween(QUICK_TRANSPORT_DEMO.fromId, QUICK_TRANSPORT_DEMO.toId, state.roads);
   const quickFactor = quickRoad ? TERRAIN_FACTORS[quickRoad.terrain] : 0;
-  const quickLost = Math.floor(QUICK_TRANSPORT.amount * (1 - quickFactor));
-  const quickArrives = QUICK_TRANSPORT.amount - quickLost;
+  const quickLost = Math.floor(QUICK_TRANSPORT_DEMO.amount * (1 - quickFactor));
+  const quickArrives = QUICK_TRANSPORT_DEMO.amount - quickLost;
   const resourceTurnRemainder = state.tick % RESOURCE_TURN_INTERVAL;
-  const ticksUntilConsumption =
-    (RESOURCE_TURN_INTERVAL - resourceTurnRemainder) || RESOURCE_TURN_INTERVAL;
+  const ticksUntilConsumption = RESOURCE_TURN_INTERVAL - resourceTurnRemainder;
   const activeQuickTransports = state.wagonOrders.filter(
     (wagon) =>
       wagon.status === 'in_transit' &&
-      wagon.fromId === QUICK_TRANSPORT.fromId &&
-      wagon.toId === QUICK_TRANSPORT.toId &&
-      wagon.items.food === QUICK_TRANSPORT.amount
+      wagon.fromId === QUICK_TRANSPORT_DEMO.fromId &&
+      wagon.toId === QUICK_TRANSPORT_DEMO.toId &&
+      wagon.items.food === QUICK_TRANSPORT_DEMO.amount
   ).length;
-  const canQuickTransport = (sourceCity?.resources.food ?? 0) >= QUICK_TRANSPORT.amount && Boolean(quickRoad);
+  const canQuickTransport = (sourceCity?.resources.food ?? 0) >= QUICK_TRANSPORT_DEMO.amount && Boolean(quickRoad);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -59,8 +58,8 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
           🎯 資源輸送プロトタイプ
         </div>
         <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: 1.5, marginBottom: '8px' }}>
-          {QUICK_TRANSPORT.fromLabel}={sourceCity?.name ?? QUICK_TRANSPORT.fromId} から {QUICK_TRANSPORT.toLabel}=
-          {destinationCity?.name ?? QUICK_TRANSPORT.toId} へ 🌾 食料 {QUICK_TRANSPORT.amount} を一括輸送します。
+          {QUICK_TRANSPORT_DEMO.fromLabel}={sourceCity?.name ?? QUICK_TRANSPORT_DEMO.fromId} から {QUICK_TRANSPORT_DEMO.toLabel}=
+          {destinationCity?.name ?? QUICK_TRANSPORT_DEMO.toId} へ 🌾 食料 {QUICK_TRANSPORT_DEMO.amount} を一括輸送します。
           クリック後は出発地の在庫が即時に減り、到着時にロス込みで目的地へ反映されます。
         </div>
         {quickRoad && (
@@ -95,7 +94,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
               fontWeight: 'bold',
             }}
           >
-            🌾 {QUICK_TRANSPORT.fromLabel}→{QUICK_TRANSPORT.toLabel}へ食料を輸送
+            🌾 {QUICK_TRANSPORT_DEMO.fromLabel}→{QUICK_TRANSPORT_DEMO.toLabel}へ食料を輸送
           </button>
           <span style={{ color: '#64748b', fontSize: '11px' }}>
             次の食料消費まで {ticksUntilConsumption} tick
