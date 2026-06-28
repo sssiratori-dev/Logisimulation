@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { GameState } from '../game/types';
+import type { GameState, ResourceStock } from '../game/types';
 import { createInitialState } from '../game/initialData';
 import { tick, assignOrderToTruck, buyTruck } from '../game/gameEngine';
+import { issueWagonOrder } from '../game/resourceEngine';
 
 const TICK_MS = 100; // base tick interval in ms
 
@@ -58,6 +59,13 @@ export function useGameLoop() {
     setState((s) => buyTruck(s, cityId));
   }, []);
 
+  const issueWagon = useCallback(
+    (fromId: string, toId: string, items: Partial<ResourceStock>) => {
+      setState((s) => issueWagonOrder(s, fromId, toId, items));
+    },
+    []
+  );
+
   const resetGame = useCallback(() => {
     setState(createInitialState());
   }, []);
@@ -70,6 +78,7 @@ export function useGameLoop() {
     selectOrder,
     assignOrder,
     purchaseTruck,
+    issueWagon,
     resetGame,
   };
 }

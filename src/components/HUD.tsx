@@ -34,6 +34,11 @@ export function HUD({ state, onTogglePause, onSetSpeed, onReset }: Props) {
         <Stat label="🏆 スコア" value={state.score.toLocaleString()} color="#fbbf24" />
         <Stat label="✅ 配送完了" value={state.deliveredCount.toString()} color="#60a5fa" />
         <Stat label="❌ 期限切れ" value={state.expiredCount.toString()} color="#f87171" />
+        <Stat
+          label="💀 腐敗値"
+          value={Math.floor(state.corruption).toString()}
+          color={state.chaosActive ? '#f87171' : state.corruption > 300 ? '#fbbf24' : '#94a3b8'}
+        />
         <Stat label="⏱ Tick" value={state.tick.toString()} color="#94a3b8" />
       </div>
 

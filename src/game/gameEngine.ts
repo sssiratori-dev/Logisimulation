@@ -1,6 +1,7 @@
 import type { GameState, Truck } from './types';
 import { findShortestPath, getRoadBetween } from './pathfinding';
-import { generateOrder, MAINTENANCE_PER_TICK, TRUCK_COST, nextTruckId } from './initialData';
+import { generateOrder, MAINTENANCE_PER_TICK, TRUCK_COST, nextTruckId, RESOURCE_TURN_INTERVAL } from './initialData';
+import { processResourceTurn, processWagonArrivals } from './resourceEngine';
 
 const ORDER_SPAWN_INTERVAL = 30;
 const MAX_PENDING_ORDERS = 12;
@@ -92,7 +93,10 @@ export function tick(state: GameState): GameState {
     return truck;
   });
 
-  return {
+  // ── Resource system ───────────────────────────────────────────────────────
+
+  // Process wagon arrivals every tick
+  let resourceState: GameState = {
     ...state,
     tick: newTick,
     money,
@@ -103,6 +107,14 @@ export function tick(state: GameState): GameState {
     expiredCount,
     log: log.slice(-50),
   };
+  resourceState = processWagonArrivals(resourceState, log);
+
+  // Food consumption every RESOURCE_TURN_INTERVAL ticks
+  if (newTick % RESOURCE_TURN_INTERVAL === 0) {
+    resourceState = processResourceTurn(resourceState, log);
+  }
+
+  return { ...resourceState, log: log.slice(-50) };
 }
 
 function updateTruck(truck: Truck, state: GameState, log: string[]): Truck {
