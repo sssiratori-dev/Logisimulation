@@ -24,6 +24,9 @@ function App() {
   const { state, togglePause, setSpeed, selectTruck, selectOrder, assignOrder, purchaseTruck, issueWagon, resetGame } =
     useGameLoop();
   const [activeTab, setActiveTab] = useState<Tab>('resources');
+  const issueQuickTransport = () => {
+    issueWagon('sapporo', 'sendai', { food: 120 });
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0f172a', color: '#f1f5f9', fontFamily: 'system-ui, sans-serif', overflow: 'hidden' }}>
@@ -36,7 +39,7 @@ function App() {
             <GameMap state={state} onCityClick={(_cityId: string) => {}} />
           </div>
           <div style={{ marginTop: '8px', color: '#475569', fontSize: '11px' }}>
-            💡 操作方法: [トラック] タブでトラック選択 → [注文] で割り当て | [資源] で都市ストック確認 | [輸送] で荷馬車命令
+            💡 操作方法: [資源] タブ上部のデモボタンで食料輸送を実行 | [輸送] で自由な荷馬車命令 | [トラック]/[注文] で物流ゲーム全体を確認
           </div>
         </div>
 
@@ -73,7 +76,9 @@ function App() {
             {activeTab === 'orders' && (
               <OrderPanel state={state} onSelectOrder={selectOrder} onAssign={assignOrder} />
             )}
-            {activeTab === 'resources' && <ResourcePanel state={state} />}
+            {activeTab === 'resources' && (
+              <ResourcePanel state={state} onQuickTransport={issueQuickTransport} />
+            )}
             {activeTab === 'wagon' && (
               <WagonPanel
                 state={state}
