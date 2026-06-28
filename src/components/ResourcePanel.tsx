@@ -21,9 +21,9 @@ const TERRAIN_LABEL: Record<string, string> = {
 };
 
 const QUICK_TRANSPORT_DEMO = {
-  fromLabel: '拠点A',
+  fromLabel: '札幌',
   fromId: 'sapporo',
-  toLabel: '拠点B',
+  toLabel: '仙台',
   toId: 'sendai',
   amount: 120,
 } as const;
@@ -65,14 +65,14 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
       ),
     [state.wagonOrders]
   );
-  const quickDemoRoute = sourceCity && destinationCity && quickRoad ? quickRoad : null;
-  const isQuickDemoConfigured = Boolean(quickDemoRoute);
+  const quickDemoRoute = quickRoad;
+  const isQuickDemoConfigured = Boolean(sourceCity && destinationCity && quickDemoRoute);
   const canQuickTransport =
     isQuickDemoConfigured &&
     (sourceCity?.resources.food ?? 0) >= QUICK_TRANSPORT_DEMO.amount;
-  const quickTransportDescription = `${QUICK_TRANSPORT_DEMO.fromLabel}=${
-    sourceCity?.name ?? QUICK_TRANSPORT_DEMO.fromId
-  } から ${QUICK_TRANSPORT_DEMO.toLabel}=${destinationCity?.name ?? QUICK_TRANSPORT_DEMO.toId} へ 🌾 食料 ${
+  const quickTransportDescription = `${sourceCity?.name ?? QUICK_TRANSPORT_DEMO.fromLabel} から ${
+    destinationCity?.name ?? QUICK_TRANSPORT_DEMO.toLabel
+  } へ 🌾 食料 ${
     QUICK_TRANSPORT_DEMO.amount
   } を一括輸送します。`;
 
