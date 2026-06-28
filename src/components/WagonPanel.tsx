@@ -3,7 +3,7 @@ import type { GameState, ResourceType } from '../game/types';
 import { TERRAIN_FACTORS } from '../game/types';
 import { RESOURCE_LABELS } from '../game/resourceEngine';
 import { getRoadBetween } from '../game/pathfinding';
-import { WAGON_TICKS_PER_100KM } from '../game/initialData';
+import { wagonTravelTicks } from '../game/initialData';
 
 interface Props {
   state: GameState;
@@ -103,7 +103,7 @@ export function WagonPanel({ state, onIssueOrder }: Props) {
             }}
           >
             {TERRAIN_LABEL[road.terrain]} — {road.distance}km — 到着まで約{' '}
-        {Math.ceil((road.distance / 100) * WAGON_TICKS_PER_100KM)} tick
+        {wagonTravelTicks(road.distance)} tick
           </div>
         ) : (
           <div

@@ -5,7 +5,7 @@ import {
   POPULATION_LOSS_RATE,
   CORRUPTION_THRESHOLD,
   nextWagonId,
-  WAGON_TICKS_PER_100KM,
+  wagonTravelTicks,
 } from './initialData';
 import { getRoadBetween } from './pathfinding';
 
@@ -35,7 +35,7 @@ export function processResourceTurn(state: GameState, log: string[]): GameState 
     const newPop = city.population - popLoss;
 
     log.push(
-      `⚠️ ${city.name}: 食料不足 (-${deficit}) → 人口 ${city.population}→${newPop} (-${popLoss})`
+      `⚠️ ${city.name}: 食料不足 (-${deficit}) → 人口 ${city.population} → ${newPop} (-${popLoss})`
     );
 
     return {
@@ -144,7 +144,7 @@ export function issueWagonOrder(
   }
 
   // Arrival tick: distance / 100 * WAGON_TICKS_PER_100KM
-  const travelTicks = Math.ceil((road.distance / 100) * WAGON_TICKS_PER_100KM);
+  const travelTicks = wagonTravelTicks(road.distance);
   const arriveTick = state.tick + travelTicks;
 
   const wo: WagonOrder = {

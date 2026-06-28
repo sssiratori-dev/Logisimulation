@@ -12,6 +12,11 @@ export const CORRUPTION_THRESHOLD = 500;
 /** Wagon travel speed: ticks per 100 km (adjusted by terrain inside engine). */
 export const WAGON_TICKS_PER_100KM = 30;
 
+/** Compute how many ticks a wagon takes to travel a given distance. */
+export function wagonTravelTicks(distanceKm: number): number {
+  return Math.ceil((distanceKm / 100) * WAGON_TICKS_PER_100KM);
+}
+
 // ── Economy constants ──────────────────────────────────────────────────────
 
 const CARGO_TYPES = [
