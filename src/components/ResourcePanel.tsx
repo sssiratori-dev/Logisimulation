@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { GameState } from '../game/types';
 import { RESOURCE_LABELS } from '../game/resourceEngine';
 import { CORRUPTION_THRESHOLD, RESOURCE_TURN_INTERVAL } from '../game/initialData';
@@ -27,22 +28,39 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
   const corruptionPct = Math.min(100, (state.corruption / CORRUPTION_THRESHOLD) * 100);
   const corruptionColor =
     corruptionPct >= 100 ? '#f87171' : corruptionPct >= 70 ? '#fbbf24' : '#34d399';
-  const sourceCity = state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.fromId);
-  const destinationCity = state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.toId);
+  const [sourceCity, destinationCity] = useMemo(
+    () => [
+      state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.fromId),
+      state.cities.find((city) => city.id === QUICK_TRANSPORT_DEMO.toId),
+    ],
+    [state.cities]
+  );
   const quickRoad = getRoadBetween(QUICK_TRANSPORT_DEMO.fromId, QUICK_TRANSPORT_DEMO.toId, state.roads);
   const quickFactor = quickRoad ? TERRAIN_FACTORS[quickRoad.terrain] : 0;
   const quickLost = Math.floor(QUICK_TRANSPORT_DEMO.amount * (1 - quickFactor));
   const quickArrives = QUICK_TRANSPORT_DEMO.amount - quickLost;
   const resourceTurnRemainder = state.tick % RESOURCE_TURN_INTERVAL;
   const ticksUntilConsumption = RESOURCE_TURN_INTERVAL - resourceTurnRemainder;
-  const activeQuickTransports = state.wagonOrders.filter(
-    (wagon) =>
-      wagon.status === 'in_transit' &&
-      wagon.fromId === QUICK_TRANSPORT_DEMO.fromId &&
-      wagon.toId === QUICK_TRANSPORT_DEMO.toId &&
-      wagon.items.food === QUICK_TRANSPORT_DEMO.amount
-  ).length;
+  const activeQuickTransports = useMemo(
+    () =>
+      state.wagonOrders.reduce(
+        (count, wagon) =>
+          wagon.status === 'in_transit' &&
+          wagon.fromId === QUICK_TRANSPORT_DEMO.fromId &&
+          wagon.toId === QUICK_TRANSPORT_DEMO.toId &&
+          wagon.items.food === QUICK_TRANSPORT_DEMO.amount
+            ? count + 1
+            : count,
+        0
+      ),
+    [state.wagonOrders]
+  );
   const canQuickTransport = (sourceCity?.resources.food ?? 0) >= QUICK_TRANSPORT_DEMO.amount && Boolean(quickRoad);
+  const quickTransportDescription = `${QUICK_TRANSPORT_DEMO.fromLabel}=${
+    sourceCity?.name ?? QUICK_TRANSPORT_DEMO.fromId
+  } から ${QUICK_TRANSPORT_DEMO.toLabel}=${destinationCity?.name ?? QUICK_TRANSPORT_DEMO.toId} へ 🌾 食料 ${
+    QUICK_TRANSPORT_DEMO.amount
+  } を一括輸送します。`;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -58,8 +76,8 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
           🎯 資源輸送プロトタイプ
         </div>
         <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: 1.5, marginBottom: '8px' }}>
-          {QUICK_TRANSPORT_DEMO.fromLabel}={sourceCity?.name ?? QUICK_TRANSPORT_DEMO.fromId} から {QUICK_TRANSPORT_DEMO.toLabel}=
-          {destinationCity?.name ?? QUICK_TRANSPORT_DEMO.toId} へ 🌾 食料 {QUICK_TRANSPORT_DEMO.amount} を一括輸送します。
+          {quickTransportDescription}
+          <br />
           クリック後は出発地の在庫が即時に減り、到着時にロス込みで目的地へ反映されます。
         </div>
         {quickRoad && (
