@@ -133,7 +133,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
             🌾 {QUICK_TRANSPORT_DEMO.fromLabel}→{QUICK_TRANSPORT_DEMO.toLabel}へ食料を輸送
           </button>
           <span style={{ color: '#64748b', fontSize: '11px' }}>
-            次の食料消費まで {ticksUntilConsumption} tick
+            次の食料消費まで {ticksUntilConsumption} ティック
           </span>
           {activeQuickTransports > 0 && (
             <span style={{ color: '#fbbf24', fontSize: '11px' }}>
@@ -237,7 +237,7 @@ export function ResourcePanel({ state, onQuickTransport }: Props) {
           {/* Food consumption forecast */}
           <div style={{ marginTop: '5px', fontSize: '10px', color: '#475569' }}>
             消費予測: {Math.floor(city.population * FOOD_PER_PERSON)}/ターン ・ 次回消費まで{' '}
-            {ticksUntilConsumption} tick
+            {ticksUntilConsumption} ティック
           </div>
         </div>
       ))}
