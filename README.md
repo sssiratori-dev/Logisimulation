@@ -31,6 +31,17 @@ npm run build    # プロダクションビルド
 npm run preview  # ビルドのプレビュー
 ```
 
+### Windows 初回セットアップ
+
+このプロジェクトの実行には **Node.js (LTS)** が必要です。`npm` コマンドが見つからない場合は、以下を実行してください。
+
+```powershell
+winget install OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+```
+
+インストール直後は、既存のターミナルでは `node` / `npm` が認識されない場合があります。
+その場合は **VS Code のターミナルを開き直す** か、VS Code を再起動してから再実行してください。
+
 ## 技術スタック
 
 - Vite + React + TypeScript
