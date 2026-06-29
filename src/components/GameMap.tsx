@@ -23,8 +23,18 @@ export function GameMap({ state, onCityClick }: Props) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    // Sync canvas internal resolution to its CSS display size so it fills the container
+    const displayW = canvas.offsetWidth || MAP_WIDTH;
+    const displayH = canvas.offsetHeight || MAP_HEIGHT;
+    canvas.width = displayW;
+    canvas.height = displayH;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Scale the drawing context so all coordinates remain in MAP_WIDTH × MAP_HEIGHT space
+    ctx.setTransform(displayW / MAP_WIDTH, 0, 0, displayH / MAP_HEIGHT, 0, 0);
 
     // Clear
     ctx.clearRect(0, 0, MAP_WIDTH, MAP_HEIGHT);
@@ -201,7 +211,7 @@ export function GameMap({ state, onCityClick }: Props) {
       width={MAP_WIDTH}
       height={MAP_HEIGHT}
       onClick={handleClick}
-      style={{ width: '100%', cursor: 'pointer', borderRadius: '8px', display: 'block' }}
+      style={{ width: '100%', height: '100%', cursor: 'pointer', borderRadius: '8px', display: 'block' }}
     />
   );
 }
